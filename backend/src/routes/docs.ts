@@ -1,7 +1,7 @@
 import { Router, Request, Response, RequestHandler } from 'express'
 import multer from 'multer'
-import { uploadPDF } from '../services/google'
-import { logger } from '../services/logger'
+import { uploadPDF } from '@services/google'
+import { logger } from '@services/logger'
 const docs = Router()
 const upload = multer()
 
