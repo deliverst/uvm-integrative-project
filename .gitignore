@@ -131,3 +131,42 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# Android
+/android/.gradle/
+android/app/build/
+android/app/release/
+/android/app/src/main/res/drawable-*dpi/
+android/build/
+android/.idea/
+android/local.properties
+android/.vscode/
+
+# iOS
+frontend/ios/Pods/
+frontend/ios/build/
+frontend/ios/.idea/
+frontend/ios/.vscode/
+*.xcodeproj/
+*.xcworkspace/
+frontend/vendor
+
+# Xcode
+*.xcuserdatad
+*.xcuserdata/
+*.lock
+*.pbxproj
+*.xcuserstate
+*.xcsettings
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Jest
+/coverage/
+*.nyc_output
+jest-html-reports/
