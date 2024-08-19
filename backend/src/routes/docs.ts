@@ -18,13 +18,17 @@ const handleUpload: RequestHandler = async (req: MulterRequest, res: Response) =
 	try {
 
 		const document = await new documento(data)
-		await document.save()
 		const { companyName, documentType } = document
 		console.log({ document })
 		if (req.files && !Array.isArray(req.files) && req.files['pdf']) {
 			const pdf = req.files['pdf'][0]
 			uploadPDF(companyName, documentType, pdf.buffer)
 		}
+
+		// @ts-ignore
+		document.url = await getSignedUrl(companyName, documentType)
+
+		await document.save()
 		res.status(201).send('Documento creado')
 	} catch (e: any) {
 		logger.error(e.message)
@@ -38,13 +42,14 @@ docs.post('/', upload.fields([{ name: 'pdf', maxCount: 1 }]), handleUpload)
 
 docs.get('/', async (req: Request, res: Response) => {
 	let documents
-	[documents] = await documento.find({})
-	const { companyName, documentType } = documents
-	const url = await getSignedUrl(companyName, documentType)
-	// @ts-ignore
-	documents.url = url
-	console.log({ documents })
-	res.send({ documents })
+	documents = await documento.find({})
+	// const { companyName, documentType } = documents
+	// const url = await getSignedUrl(companyName, documentType)
+	// // @ts-ignore
+	// documents.url = url
+	// console.log({ documents })
+	console.log("data")
+	res.send( documents )
 })
 
 docs.get('/:id', (req: Request, res: Response) => {

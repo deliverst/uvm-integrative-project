@@ -56,7 +56,7 @@ export const getSignedUrl = async (company: string, namePdf: string) => {
 		const [url] = await file.getSignedUrl({
 			action: 'read',
 			version: 'v4',
-			expires: Date.now() + 15 * 60 * 10000,
+			expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
 		})
 
 		console.log('Public access URL:', url)
