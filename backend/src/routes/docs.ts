@@ -36,35 +36,60 @@ const handleUpload: RequestHandler = async (req: MulterRequest, res: Response) =
 	}
 }
 
-// Usa la función handleUpload en el middleware
 docs.post('/', upload.fields([{ name: 'pdf', maxCount: 1 }]), handleUpload)
 
 
 docs.get('/', async (req: Request, res: Response) => {
 	let documents
 	documents = await documento.find({})
-	// const { companyName, documentType } = documents
-	// const url = await getSignedUrl(companyName, documentType)
-	// // @ts-ignore
-	// documents.url = url
-	// console.log({ documents })
-	console.log("data")
-	res.send( documents )
+	console.log('data')
+	res.send(documents)
 })
 
-docs.get('/:id', (req: Request, res: Response) => {
+docs.get('/:id', async (req: Request, res: Response) => {
 	const { id } = req.params
-	res.send(`Documento con ID: ${id}`)
+	try {
+		const document = await documento.findById(id)
+		if (!document) {
+			return res.status(404).send(`Documento con ID: ${id} no encontrado`)
+		}
+		res.json(document)
+	} catch (error) {
+		console.error('Error al obtener el documento:', error)
+		res.status(500).send('Error al obtener el documento')
+	}
 })
 
-docs.put('/:id', (req: Request, res: Response) => {
+docs.put('/:id', async (req: Request, res: Response) => {
 	const { id } = req.params
-	res.send(`Documento con ID: ${id} actualizado`)
+	const updateData = req.body
+	try {
+		const updatedDocument = await documento.findByIdAndUpdate(id, updateData, {
+			new: true,
+			runValidators: true,
+		})
+		if (!updatedDocument) {
+			return res.status(404).send(`Documento con ID: ${id} no encontrado`)
+		}
+		res.json(updatedDocument)
+	} catch (error) {
+		console.error('Error al actualizar el documento:', error)
+		res.status(500).send('Error al actualizar el documento')
+	}
 })
 
-docs.delete('/:id', (req: Request, res: Response) => {
+docs.delete('/:id', async (req: Request, res: Response) => {
 	const { id } = req.params
-	res.send(`Documento con ID: ${id} eliminado`)
+	try {
+		const deletedDocument = await documento.findByIdAndDelete(id)
+		if (!deletedDocument) {
+			return res.status(404).send(`Documento con ID: ${id} no encontrado`)
+		}
+		res.send(`Documento con ID: ${id} eliminado`)
+	} catch (error) {
+		console.error('Error al eliminar el documento:', error)
+		res.status(500).send('Error al eliminar el documento')
+	}
 })
 
 export default docs
