@@ -1,7 +1,9 @@
 import { Router, Request, Response, RequestHandler } from 'express'
 import multer from 'multer'
-import { uploadPDF } from '@services/google'
+import { getSignedUrl, uploadPDF } from '@services/google'
 import { logger } from '@services/logger'
+import documento from '../models/documents'
+
 const docs = Router()
 const upload = multer()
 
@@ -10,11 +12,18 @@ interface MulterRequest extends Request {
 }
 
 const handleUpload: RequestHandler = async (req: MulterRequest, res: Response) => {
+
+	const data = req.body
+
 	try {
 
+		const document = await new documento(data)
+		await document.save()
+		const { companyName, documentType } = document
+		console.log({ document })
 		if (req.files && !Array.isArray(req.files) && req.files['pdf']) {
 			const pdf = req.files['pdf'][0]
-			uploadPDF('Testing', 'Contrato', pdf.buffer)
+			uploadPDF(companyName, documentType, pdf.buffer)
 		}
 		res.status(201).send('Documento creado')
 	} catch (e: any) {
@@ -27,8 +36,15 @@ const handleUpload: RequestHandler = async (req: MulterRequest, res: Response) =
 docs.post('/', upload.fields([{ name: 'pdf', maxCount: 1 }]), handleUpload)
 
 
-docs.get('/', (req: Request, res: Response) => {
-	res.send('Lista de documentos')
+docs.get('/', async (req: Request, res: Response) => {
+	let documents
+	[documents] = await documento.find({})
+	const { companyName, documentType } = documents
+	const url = await getSignedUrl(companyName, documentType)
+	// @ts-ignore
+	documents.url = url
+	console.log({ documents })
+	res.send({ documents })
 })
 
 docs.get('/:id', (req: Request, res: Response) => {

@@ -10,6 +10,6 @@ const DocumentoSchema: Schema = new Schema({
 	{ timestamps: true },
 )
 
-const Documento = mongoose.model<IDocumento>('documents', DocumentoSchema)
+const documento = mongoose.model<IDocumento>('documents', DocumentoSchema)
 
-export default Documento
+export default documento
